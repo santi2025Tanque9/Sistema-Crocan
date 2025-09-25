@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Crocan{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg" style="max-width: 700px; width: 100%;">
+        <div class="row g-0">
+            <!-- Imagen -->
+            <div class="col-md-6 d-flex align-items-center justify-content-center bg-light">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" class="img-fluid rounded-start p-3" alt="{{ product.name }}">
+                {% else %}
+                <img src="https://via.placeholder.com/300x300" class="img-fluid rounded-start p-3" alt="Sin imagen">
+                {% endif %}
+            </div>
+
+            <!-- Info del producto -->
+            <div class="col-md-6">
+                <div class="card-body d-flex flex-column h-100">
+                    <h3 class="card-title">{{ product.name }}</h3>
+                    <p class="card-text text-muted">{{ product.description }}</p>
+                    <h4 class="fw-bold mt-auto">$ {{ product.price }}</h4>
+
+                    <form action="{% url 'cart:add_to_cart' product.id %}" method="post" class="mt-3">
+                        {% csrf_token %}
+                        {{ cart_product_form.as_p }} <!-- o customizado con Bootstrap -->
+                        <button type="submit" class="btn btn-success w-100">Añadir al carrito</button>
+                    </form>
+
+                    <!-- Volver -->
+                    <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary w-100 mt-2">
+                        ← Volver a productos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

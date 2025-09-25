@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <h2 class="mb-4">🛒 Mi Carrito de Compras ({{ cart|length }})</h2>
+
+    {% if cart %}
+    <div class="row">
+        <!-- Columna izquierda: productos -->
+        <div class="col-md-9">
+            <div class="list-group mb-4">
+                {% for item in cart %}
+                <div class="list-group-item mb-3 shadow-sm rounded">
+                    <div class="row align-items-center">
+
+                        <!-- Imagen -->
+                        <div class="col-md-2">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" class="img-fluid rounded"
+                                alt="{{ item.product.name }}">
+                            {% else %}
+                            <img src="https://via.placeholder.com/150" class="img-fluid rounded" alt="Sin imagen">
+                            {% endif %}
+                        </div>
+
+                        <!-- Detalles -->
+                        <div class="col-md-4">
+                            <h5 class="mb-1">{{ item.product.name }}</h5>
+                            <p class="text-muted mb-1">Precio unitario: ${{ item.price }}</p>
+                            <p class="text-muted mb-1">Nota: {{ item.note|default:"(sin nota)" }}</p>
+                        </div>
+
+                        <!-- Cantidad -->
+                        <div class="col-md-2">
+                            <form action="{% url 'cart:add_to_cart' item.product.id %}" method="post"
+                                class="d-flex align-items-center">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                                    class="form-control me-2">
+                                <input type="hidden" name="note" value="{{ item.note }}">
+                                <input type="hidden" name="override_quantity" value="true">
+                                <button type="submit" class="btn btn-outline-primary btn-sm">Actualizar</button>
+                            </form>
+                        </div>
+
+                        <!-- Subtotal -->
+                        <div class="col-md-2">
+                            <p class="fw-bold">Subtotal: ${{ item.subtotal }}</p>
+                        </div>
+
+                        <!-- Eliminar -->
+                        <div class="col-md-2 text-end">
+                            <a href="{% url 'cart:remove_from_cart' item.product.id %}"
+                                class="btn btn-danger btn-sm">✕</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- Botón Seguir Comprando -->
+            <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary">
+                ← Seguir comprando
+            </a>
+        </div>
+
+        <!-- Columna derecha: total + datos cliente -->
+        <div class="col-md-3">
+            <div class="position-sticky" style="top: 20px;">
+                <div class="card shadow-sm p-4 mb-4">
+                    <h4 class="mb-3">Total: ${{ cart.get_total }}</h4>
+                </div>
+
+                <div class="card shadow-sm p-4">
+                    <h5 class="mb-3">Datos del Cliente</h5>
+                    <form action="#" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="customer_name" class="form-label">Nombre del cliente</label>
+                            <input type="text" id="customer_name" name="customer_name" class="form-control"
+                                placeholder="Ej: Juan Pérez" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Finalizar Pedido</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>Tu carrito está vacío 😢</p>
+    {% endif %}
+</div>
+{% endblock %}
