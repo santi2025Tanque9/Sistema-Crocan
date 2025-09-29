@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from applications.products.models import Product
 
 class Order(models.Model):
@@ -10,7 +11,17 @@ class Order(models.Model):
         ('cancelled', 'Cancelado'),
     ]
     
-    customer_name = models.CharField(max_length=100)
+    # Para clientes regulares (sin cuenta)
+    customer_name = models.CharField(max_length=100, blank=True, null=True)
+    
+    # Para clientes socios (con cuenta) - usando el modelo compartido
+    customer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Esto apunta a 'users.Usuario'
+        on_delete=models.SET_NULL, 
+        blank=True, null=True, 
+        related_name='orders'
+    )
+    
     total = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -21,6 +32,8 @@ class Order(models.Model):
         verbose_name_plural = "Pedidos"
 
     def __str__(self):
+        if self.customer:
+            return f"Pedido #{self.id} - {self.customer.get_full_name()}"
         return f"Pedido #{self.id} - {self.customer_name}"
 
 class OrderItem(models.Model):

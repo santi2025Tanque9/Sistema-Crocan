@@ -19,8 +19,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'dbcrocan',
-        'USER': 'tanque',
-        'PASSWORD': 'santi123',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
         'HOST': 'localhost',  # o IP del servidor
         'PORT': '5432',        # Puerto por defecto de PostgreSQL
     }

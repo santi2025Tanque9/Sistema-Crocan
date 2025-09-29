@@ -5,6 +5,8 @@ app_name = "cart"
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("customer-login/", views.customer_login, name="customer_login"),
+    path("customer-logout/", views.customer_logout, name="customer_logout"),
     path("add/<int:product_id>/", views.add_to_cart, name="add_to_cart"),
     path("Carrito-Pedido/", views.cart_detail, name="cart_detail"),
     path("remove/<str:item_key>/", views.remove_from_cart, name="remove_from_cart"),

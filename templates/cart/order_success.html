@@ -20,13 +20,42 @@
                     <div class="text-center border-bottom pb-3 mb-3">
                         <h5 class="mb-2">Crocan - Fast Food</h5>
                         <p class="mb-1">Nro de Pedido: <strong>PD{{ order.id }}</strong></p>
-                        <p class="mb-1">Cliente: <strong>{{ order.customer_name }}</strong></p>
+                        
+                        {% if order.customer %}
+                            <!-- Pedido de socio -->
+                            <p class="mb-1">Cliente Socio: <strong>{{ order.customer.get_full_name }}</strong></p>
+                            <p class="mb-1">DNI: <strong>{{ order.customer.dni }}</strong></p>
+                        {% else %}
+                            <!-- Pedido de regular -->
+                            <p class="mb-1">Cliente: <strong>{{ order.customer_name }}</strong></p>
+                            <p class="mb-1">Tipo: <strong>Cliente Regular</strong></p>
+                        {% endif %}
+                        
                         <p class="mb-1">Fecha de pago: <strong>{% now "d/m/Y" %}</strong></p>
                     </div>
 
                     <div class="text-center">
                         <h4 class="text-success">Total: ${{ order.total }}</h4>
                     </div>
+
+                    <!-- Mensaje de puntos para socios -->
+                    {% if last_customer_data %}
+                    <div class="alert alert-info mt-4">
+                        <h6>¡Gracias por tu compra, {{ last_customer_data.name }}!</h6>
+                        <p class="mb-1">Has ganado <strong>{{ last_customer_data.points_earned }} puntos</strong> por esta compra.</p>
+                        <p class="mb-0">Puntos totales acumulados: <strong>{{ last_customer_data.points }}</strong></p>
+                        <hr>
+                        <p class="mb-0 small text-muted">Tu sesión como socio se ha cerrado automáticamente.</p>
+                    </div>
+                    {% elif points_earned > 0 %}
+                    <div class="alert alert-info mt-4">
+                        <h6>¡Puntos Ganados!</h6>
+                        <p class="mb-0">Has ganado <strong>{{ points_earned }} puntos</strong> por tu compra.</p>
+                        {% if order.customer %}
+                        <p class="mb-0">Puntos totales: <strong>{{ order.customer.puntos }}</strong></p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
 
                     <!-- Detalles del pedido -->
                     <div class="mt-4">
@@ -57,11 +86,6 @@
                 </div>
             </div>
 
-            <div class="text-center mt-4">
-                <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary">
-                    ← Hacer otro pedido
-                </a>
-            </div>
         </div>
     </div>
 </div>

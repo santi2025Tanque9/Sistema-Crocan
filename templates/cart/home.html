@@ -7,14 +7,37 @@
         <div class="col-md-8 text-center">
             <h1 class="mb-5">CROCAN - PACT FOOD</h1>
             
+            <!-- Si ya hay un cliente socio logueado -->
+            {% if request.session.customer_id %}
+            <div class="alert alert-info mb-4">
+                <h4>¡Sesión de Socio Activa!</h4>
+                <p>Al continuar, se mostrarán los datos del socio para verificación.</p>
+                <a href="{% url 'cart:customer_logout' %}" class="btn btn-outline-secondary btn-sm">
+                    Cerrar Sesión Socio
+                </a>
+            </div>
+            {% endif %}
+            
             <!-- Cliente Socio -->
             <div class="card mb-4 shadow-sm">
                 <div class="card-body">
                     <h3 class="card-title">👑 Cliente Socio</h3>
                     <p class="card-text">Suma puntos y beneficios especiales</p>
-                    <a href="{% url 'products:product_list' %}" class="btn btn-warning btn-lg">
-                        Hacer Pedido Como Socio
-                    </a>
+                    {% if request.session.customer_id %}
+                        <a href="{% url 'products:product_list' %}" class="btn btn-warning btn-lg">
+                            Continuar Como Socio
+                        </a>
+                        <div class="mt-2">
+                            <small class="text-muted">Se mostrará un modal con los datos del socio</small>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'cart:customer_login' %}" class="btn btn-warning btn-lg">
+                            Ingresar Como Socio
+                        </a>
+                        <div class="mt-2">
+                            <small class="text-muted">Solo se solicitará su DNI</small>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -26,6 +49,9 @@
                     <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
                         Hacer Pedido Regular
                     </a>
+                    <div class="mt-2">
+                        <small class="text-muted">No requiere identificación</small>
+                    </div>
                 </div>
             </div>
         </div>

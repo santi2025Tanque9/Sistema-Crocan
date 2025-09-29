@@ -6,25 +6,28 @@
 <div class="container-fluid">
     <h2 class="mb-4">Productos</h2>
 
+    <!-- Botón para abrir modal de información del socio -->
+    {% if customer_data %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#customerModal">
+                👑 Ver Cliente Socio Actual
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Navegación de categorías -->
     <div class="row mb-4">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="btn-group" role="group">
                 {% for category in categories %}
                 <a href="{% url 'products:product_list_by_category' category.id %}" 
-                class="btn btn-outline-primary {% if current_category.id == category.id %}active{% endif %}">
+                   class="btn btn-outline-primary {% if current_category.id == category.id %}active{% endif %}">
                     {{ category.name }}
                 </a>
                 {% endfor %}
             </div>
-        </div>
-        <div class="col-md-4 text-end">
-            <a href="{% url 'cart:cart_detail' %}" class="btn btn-success">
-                🛒 Ver Carrito 
-                {% if request.session.cart %}
-                <span class="badge bg-danger">{{ request.session.cart.items|length }}</span>
-                {% endif %}
-            </a>
         </div>
     </div>
 
@@ -44,7 +47,7 @@
                     <p class="card-text text-muted">{{ product.description|truncatewords:10 }}</p>
                     <p class="card-text fw-bold text-primary">${{ product.price }}</p>
                     
-                    <!-- Botón para abrir modal -->
+                    <!-- Botón para abrir modal de detalles -->
                     <button type="button" class="btn btn-info btn-sm mb-2" 
                             data-bs-toggle="modal" 
                             data-bs-target="#productModal"
@@ -87,7 +90,68 @@
     </div>
 </div>
 
-<!-- Modal para detalles del producto -->
+<!-- Modal para información del cliente socio -->
+{% if customer_data %}
+<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="customerModalLabel">
+                    👑 Cliente Socio Identificado
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <i class="bi bi-person-circle" style="font-size: 3rem; color: #ffc107;"></i>
+                    </div>
+                    <h4>{{ customer_data.name }}</h4>
+                    <p class="text-muted">DNI: {{ customer_data.dni }}</p>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title">Puntos Acumulados</h6>
+                                <h3 class="text-warning">{{ customer_data.points }}</h3>
+                                <small class="text-muted">puntos disponibles</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="alert alert-info small">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Información:</strong> Los puntos se acumulan automáticamente al confirmar el pedido.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <a href="{% url 'cart:customer_logout' %}" class="btn btn-outline-danger">
+                    ✕ Cambiar Cliente
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para auto-abrir el modal cuando hay un socio -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-abrir el modal del cliente socio después de 1 segundo
+    setTimeout(function() {
+        const customerModal = new bootstrap.Modal(document.getElementById('customerModal'));
+        customerModal.show();
+    }, 0);
+});
+</script>
+{% endif %}
+
+<!-- Modal para detalles del producto (existente) -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -135,7 +199,7 @@
     </div>
 </div>
 
-<!-- JavaScript para el modal -->
+<!-- JavaScript para el modal del producto -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const productModal = document.getElementById('productModal');

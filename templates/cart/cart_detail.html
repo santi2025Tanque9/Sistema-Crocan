@@ -73,37 +73,49 @@
         </div>
 
         <!-- Resumen y datos del cliente -->
-        <div class="col-md-4">
-            <div class="sticky-top" style="top: 20px;">
-                {% if cart %}
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Resumen del Pedido</h5>
+        <div class="card shadow-sm p-4">
+            <h5 class="mb-3">Datos del Cliente</h5>
+            <form action="{% url 'cart:cart_detail' %}" method="post">
+                {% csrf_token %}
+                
+                {% if request.session.customer_id %}
+                    <!-- Para socios: mostrar información -->
+                    <div class="alert alert-info">
+                        <h6>🛍️ Pedido para Socio</h6>
+                        <p class="mb-1"><strong>Nombre:</strong> {{ request.session.customer_name }}</p>
+                        <p class="mb-1"><strong>DNI:</strong> {{ request.session.customer_dni }}</p>
+                        <p class="mb-1"><strong>Puntos actuales:</strong> {{ request.session.customer_points }}</p>
+                        <p class="mb-0">
+                            <strong>Puntos a ganar:</strong> 
+                            {{ cart.get_total|floatformat:0|divisibleby:100|yesno:"1,0" }}
+                            (1 punto por cada $100 gastado)
+                        </p>
                     </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Items: {{ cart.get_total_quantity }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Total:</span>
-                            <strong class="h5">${{ cart.get_total }}</strong>
-                        </div>
-
-                        <form action="{% url 'cart:cart_detail' %}" method="post">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="customer_name" class="form-label">Nombre del Cliente</label>
-                                <input type="text" id="customer_name" name="customer_name" 
-                                       class="form-control" placeholder="Ej: Juan Pérez" required>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100 btn-lg">
-                                ✅ Confirmar Pedido
-                            </button>
-                        </form>
+                    <div class="text-end">
+                        <a href="{% url 'cart:customer_logout' %}" class="btn btn-outline-secondary btn-sm">
+                            Cambiar Cliente
+                        </a>
                     </div>
-                </div>
+                {% else %}
+                    <!-- Para regulares: input de nombre -->
+                    <div class="mb-3">
+                        <label for="customer_name" class="form-label">Nombre del Cliente (Regular)</label>
+                        <input type="text" id="customer_name" name="customer_name" 
+                            class="form-control" placeholder="Ej: Juan Pérez" required>
+                        <div class="form-text">
+                            Ingrese el nombre con el que retirará el pedido.
+                        </div>
+                    </div>
                 {% endif %}
-            </div>
+                
+                {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+                
+                <button type="submit" class="btn btn-success w-100 btn-lg mt-3">
+                    ✅ Confirmar Pedido
+                </button>
+            </form>
         </div>
     </div>
 </div>
