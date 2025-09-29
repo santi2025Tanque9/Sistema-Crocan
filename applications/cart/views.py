@@ -22,31 +22,18 @@ def add_to_cart(request, product_id):
             )
     return redirect("cart:cart_detail")
 
-def remove_from_cart(request, product_id):
-    # Limpiar toda la sesión del carrito para este producto
-    request.session.modified = True
-    
-    # Crear un nuevo carrito filtrado
-    old_cart = request.session.get('cart', {})
-    new_cart = {}
-    target_id = str(product_id)
-    
-    for item_key, item_data in old_cart.items():
-        should_keep = True
-        
-        # Verificar si este item pertenece al producto a eliminar
-        if 'product_id' in item_data:
-            if str(item_data['product_id']) == target_id:
-                should_keep = False
-        elif item_key.startswith(target_id + '_'):
-            should_keep = False
-        elif item_key == target_id:
-            should_keep = False
-        
-        if should_keep:
-            new_cart[item_key] = item_data
-    
-    request.session['cart'] = new_cart
+def remove_from_cart(request, item_key):
+    """Elimina un item específico usando su clave única"""
+    cart = Cart(request)
+    cart.remove(item_key)
+    return redirect("cart:cart_detail")
+
+@require_POST
+def update_cart_item(request, item_key):
+    """Actualiza la cantidad de un item específico"""
+    cart = Cart(request)
+    quantity = int(request.POST.get('quantity', 1))
+    cart.update_quantity(item_key, quantity)
     return redirect("cart:cart_detail")
 
 def cart_detail(request):
@@ -79,10 +66,10 @@ def cart_detail(request):
     
     return render(request, "cart/cart_detail.html", {"cart": cart})
 
-def home(request):
-    return render(request, "cart/home.html")
-
 def order_success(request, order_id):
     """Vista para mostrar el comprobante del pedido confirmado"""
     order = get_object_or_404(Order, id=order_id)
     return render(request, "cart/order_success.html", {"order": order})
+
+def home(request):
+    return render(request, "cart/home.html")

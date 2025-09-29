@@ -2,91 +2,109 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid mt-5">
-    <h2 class="mb-4">🛒 Mi Carrito de Compras ({{ cart|length }})</h2>
-
-    {% if cart %}
+<div class="container-fluid mt-4">
     <div class="row">
-        <!-- Columna izquierda: productos -->
-        <div class="col-md-9">
-            <div class="list-group mb-4">
+        <!-- Productos en el carrito -->
+        <div class="col-md-8">
+            <h2 class="mb-4">🛒 Mi Pedido ({{ cart.get_total_quantity }} items)</h2>
+            
+            {% if cart %}
+            <div class="list-group">
                 {% for item in cart %}
-                <div class="list-group-item mb-3 shadow-sm rounded">
+                <div class="list-group-item mb-3 border rounded">
                     <div class="row align-items-center">
-
                         <!-- Imagen -->
-                        <div class="col-md-2">
+                        <div class="col-2">
                             {% if item.product.image %}
-                            <img src="{{ item.product.image.url }}" class="img-fluid rounded"
-                                alt="{{ item.product.name }}">
+                            <img src="{{ item.product.image.url }}" class="img-fluid rounded" alt="{{ item.product.name }}" style="max-height: 80px;">
                             {% else %}
-                            <img src="https://via.placeholder.com/150" class="img-fluid rounded" alt="Sin imagen">
+                            <img src="https://via.placeholder.com/80" class="img-fluid rounded" alt="Sin imagen" style="max-height: 80px;">
                             {% endif %}
                         </div>
 
                         <!-- Detalles -->
-                        <div class="col-md-4">
-                            <h5 class="mb-1">{{ item.product.name }}</h5>
-                            <p class="text-muted mb-1">Precio unitario: ${{ item.price }}</p>
-                            <p class="text-muted mb-1">Nota: {{ item.note|default:"(sin nota)" }}</p>
+                        <div class="col-4">
+                            <h6 class="mb-1">{{ item.product.name }}</h6>
+                            <small class="text-muted">Precio: ${{ item.price }}</small><br>
+                            {% if item.note %}
+                            <small class="text-info"><strong>Nota:</strong> {{ item.note }}</small>
+                            {% else %}
+                            <small class="text-muted">Sin notas especiales</small>
+                            {% endif %}
                         </div>
 
                         <!-- Cantidad -->
-                        <div class="col-md-2">
-                            <form action="{% url 'cart:add_to_cart' item.product.id %}" method="post"
-                                class="d-flex align-items-center">
+                        <div class="col-2">
+                            <form action="{% url 'cart:update_cart_item' item.item_key %}" method="post" class="d-flex">
                                 {% csrf_token %}
-                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
-                                    class="form-control me-2">
-                                <input type="hidden" name="note" value="{{ item.note }}">
-                                <input type="hidden" name="override_quantity" value="true">
-                                <button type="submit" class="btn btn-outline-primary btn-sm">Actualizar</button>
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" 
+                                       class="form-control form-control-sm me-1">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">🔄</button>
                             </form>
                         </div>
 
                         <!-- Subtotal -->
-                        <div class="col-md-2">
-                            <p class="fw-bold">Subtotal: ${{ item.subtotal }}</p>
+                        <div class="col-2">
+                            <strong>${{ item.subtotal }}</strong>
                         </div>
 
                         <!-- Eliminar -->
                         <div class="col-2">
-                            <a href="{% url 'cart:remove_from_cart' item.product.id %}" class="btn btn-outline-danger btn-sm">✕</a>
+                            <a href="{% url 'cart:remove_from_cart' item.item_key %}" 
+                               class="btn btn-outline-danger btn-sm" 
+                               onclick="return confirm('¿Eliminar este item del carrito?')">✕</a>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            <!-- Botón Seguir Comprando -->
-            <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary">
-                ← Seguir comprando
-            </a>
+
+            <div class="mt-3">
+                <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary">
+                    ← Seguir comprando
+                </a>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <p>Tu carrito está vacío 😢</p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary">Comenzar a comprar</a>
+            </div>
+            {% endif %}
         </div>
 
-        <!-- Columna derecha: total + datos cliente -->
-        <div class="col-md-3">
-            <div class="position-sticky" style="top: 20px;">
-                <div class="card shadow-sm p-4 mb-4">
-                    <h4 class="mb-3">Total: ${{ cart.get_total }}</h4>
-                </div>
-
-                <div class="card shadow-sm p-4">
-                    <h5 class="mb-3">Datos del Cliente</h5>
-                    <form action="#" method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="customer_name" class="form-label">Nombre del cliente</label>
-                            <input type="text" id="customer_name" name="customer_name" class="form-control"
-                                placeholder="Ej: Juan Pérez" required>
+        <!-- Resumen y datos del cliente -->
+        <div class="col-md-4">
+            <div class="sticky-top" style="top: 20px;">
+                {% if cart %}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Resumen del Pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Items: {{ cart.get_total_quantity }}</span>
                         </div>
-                        <button type="submit" class="btn btn-success w-100">Finalizar Pedido</button>
-                    </form>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Total:</span>
+                            <strong class="h5">${{ cart.get_total }}</strong>
+                        </div>
+
+                        <form action="{% url 'cart:cart_detail' %}" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="customer_name" class="form-label">Nombre del Cliente</label>
+                                <input type="text" id="customer_name" name="customer_name" 
+                                       class="form-control" placeholder="Ej: Juan Pérez" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 btn-lg">
+                                ✅ Confirmar Pedido
+                            </button>
+                        </form>
+                    </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
-    {% else %}
-    <p>Tu carrito está vacío 😢</p>
-    {% endif %}
 </div>
 {% endblock %}
