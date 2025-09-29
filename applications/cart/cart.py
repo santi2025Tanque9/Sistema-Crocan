@@ -37,6 +37,7 @@ class Cart:
         if product_id in self.cart:
             del self.cart[product_id]
             self.save()
+    
             
     def update_note(self, product, note):
         """Cambia la nota de un producto"""

@@ -50,9 +50,8 @@
                         </div>
 
                         <!-- Eliminar -->
-                        <div class="col-md-2 text-end">
-                            <a href="{% url 'cart:remove_from_cart' item.product.id %}"
-                                class="btn btn-danger btn-sm">✕</a>
+                        <div class="col-2">
+                            <a href="{% url 'cart:remove_from_cart' item.product.id %}" class="btn btn-outline-danger btn-sm">✕</a>
                         </div>
                     </div>
                 </div>

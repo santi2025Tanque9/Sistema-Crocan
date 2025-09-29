@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="mb-5">CROCAN - PACT FOOD</h1>
+            
+            <!-- Cliente Socio -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title">👑 Cliente Socio</h3>
+                    <p class="card-text">Suma puntos y beneficios especiales</p>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-warning btn-lg">
+                        Hacer Pedido Como Socio
+                    </a>
+                </div>
+            </div>
+
+            <!-- Cliente Regular -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title">👤 Cliente Regular</h3>
+                    <p class="card-text">Realiza tu pedido con nuestros precios regulares</p>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
+                        Hacer Pedido Regular
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
