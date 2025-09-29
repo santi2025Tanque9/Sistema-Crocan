@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Modal-style success message -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h3 class="mb-0">✅ Pedido Confirmado</h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h4>Comprobante de pago</h4>
+                        <p class="text-muted">Fecha: {% now "d/m/Y" %}</p>
+                    </div>
+
+                    <div class="text-center border-bottom pb-3 mb-3">
+                        <h5 class="mb-2">Crocan - Fast Food</h5>
+                        <p class="mb-1">Nro de Pedido: <strong>PD{{ order.id }}</strong></p>
+                        <p class="mb-1">Cliente: <strong>{{ order.customer_name }}</strong></p>
+                        <p class="mb-1">Fecha de pago: <strong>{% now "d/m/Y" %}</strong></p>
+                    </div>
+
+                    <div class="text-center">
+                        <h4 class="text-success">Total: ${{ order.total }}</h4>
+                    </div>
+
+                    <!-- Detalles del pedido -->
+                    <div class="mt-4">
+                        <h6>Detalles del pedido:</h6>
+                        <ul class="list-group list-group-flush">
+                            {% for item in order.items.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ item.quantity }}x {{ item.product.name }}</strong>
+                                    {% if item.note %}
+                                    <br><small class="text-muted">{{ item.note }}</small>
+                                    {% endif %}
+                                </div>
+                                <span>${{ item.price }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card-footer text-center py-3">
+                    <button onclick="window.print()" class="btn btn-primary me-2">
+                        🖨️ Imprimir
+                    </button>
+                    <a href="{% url 'cart:home' %}" class="btn btn-secondary">
+                        Volver al Inicio
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary">
+                    ← Hacer otro pedido
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
