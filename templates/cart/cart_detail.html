@@ -260,8 +260,9 @@
                         <div class="col-sm-4 col-9">
                             <h3 class="cart-item-title">{{ item.product.name }}</h3>
                             <p class="mb-1 text-muted">Precio: <span class="cart-item-price">${{ item.price }}</span></p>
+                            <p class="mb-1 text-muted">Puntos: <span class="">{{ item.product.points }}</span></p>
                             {% if item.note %}
-                            <p class="mb-0"><small class="text-info"><strong>Nota:</strong> {{ item.note }}</small></p>
+                            <p class="mb-0"><small ><strong>Nota:</strong> {{ item.note }}</small></p>
                             {% else %}
                             <p class="mb-0"><small class="text-muted">Sin notas especiales</small></p>
                             {% endif %}
