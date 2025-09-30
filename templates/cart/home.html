@@ -2,59 +2,410 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <h1 class="mb-5">CROCAN - PACT FOOD</h1>
-            
-            <!-- Si ya hay un cliente socio logueado -->
+<style>
+    :root {
+        --primary-red: #c60c30;
+        --primary-red-dark: #a50927;
+        --secondary-yellow: #ffc107;
+        --secondary-yellow-dark: #e0a800;
+        --dark-black: #222;
+        --light-bg: #f8f9fa;
+        --border-radius: 12px;
+        --transition-speed: 0.3s;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+        --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: var(--font-family);
+    }
+
+    .customer-selection-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+
+    .page-title {
+        color: var(--dark-black);
+        font-weight: 800;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .page-subtitle {
+        color: #666;
+        font-size: 1.2rem;
+        margin-bottom: 3rem;
+        font-weight: 300;
+        text-align: center;
+    }
+
+    .customer-card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        transition: all var(--transition-speed);
+        overflow: hidden;
+        background: white;
+        height: 100%;
+        margin-bottom: 0;
+    }
+
+    .customer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .customer-card-header {
+        background: white;
+        color: var(--dark-black);
+        padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+        text-align: center;
+        border-bottom: none;
+    }
+
+    .customer-card-body {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .customer-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .customer-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--dark-black);
+    }
+
+    .customer-description {
+        color: #666;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .customer-benefits {
+        background-color: rgba(255, 193, 7, 0.05);
+        border-radius: 8px;
+        padding: 1.2rem;
+        margin: 1rem 0 1.5rem 0;
+        text-align: left;
+    }
+
+    .benefit-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.7rem;
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+
+    .benefit-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .benefit-icon {
+        color: var(--secondary-yellow);
+        margin-right: 0.7rem;
+        font-weight: bold;
+        flex-shrink: 0;
+        margin-top: 0.1rem;
+    }
+
+    /* Buttons */
+    .btn-warning {
+        background: linear-gradient(135deg, var(--secondary-yellow) 0%, var(--secondary-yellow-dark) 100%);
+        border: none;
+        color: var(--dark-black);
+        font-weight: 700;
+        padding: 12px 30px;
+        border-radius: 8px;
+        transition: all var(--transition-speed);
+        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+        width: 100%;
+    }
+
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+        background: linear-gradient(135deg, var(--secondary-yellow-dark) 0%, #d39e00 100%);
+        color: var(--dark-black);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 12px 30px;
+        border-radius: 8px;
+        transition: all var(--transition-speed);
+        box-shadow: 0 2px 8px rgba(198, 12, 48, 0.3);
+        width: 100%;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(198, 12, 48, 0.4);
+        background: linear-gradient(135deg, var(--primary-red-dark) 0%, #8c0620 100%);
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid var(--dark-black);
+        color: var(--dark-black);
+        font-weight: 600;
+        transition: all var(--transition-speed);
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: var(--dark-black);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Active Session Alert */
+    .active-session-alert {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        border: none;
+        border-radius: var(--border-radius);
+        border-left: 4px solid #2196f3;
+        box-shadow: var(--shadow);
+        max-width: 800px;
+        margin: 0 auto 3rem auto;
+    }
+
+    /* Centrado y layout */
+    .content-wrapper {
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    .cards-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .customer-card-body {
+            padding: 0 1.2rem 1.2rem 1.2rem;
+        }
+        
+        .btn-warning,
+        .btn-primary {
+            padding: 10px 25px;
+            font-size: 0.95rem;
+        }
+
+        .content-wrapper {
+            padding: 0 15px;
+        }
+        
+        .customer-benefits {
+            padding: 1rem;
+        }
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .customer-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .customer-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    /* Asegurar que las tarjetas tengan la misma altura */
+    .row-equal-height {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .row-equal-height > [class*='col-'] {
+        display: flex;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="customer-selection-container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <header class="text-center mb-5" aria-label="Selección de tipo de cliente">
+                <h1 class="page-title">CROCAN - FAST FOOD</h1>
+                <p class="page-subtitle">Selecciona cómo deseas realizar tu pedido</p>
+            </header>
+
+            <!-- Sesión activa de socio -->
             {% if request.session.customer_id %}
-            <div class="alert alert-info mb-4">
-                <h4>¡Sesión de Socio Activa!</h4>
-                <p>Al continuar, se mostrarán los datos del socio para verificación.</p>
-                <a href="{% url 'cart:customer_logout' %}" class="btn btn-outline-secondary btn-sm">
-                    Cerrar Sesión Socio
-                </a>
-            </div>
-            {% endif %}
-            
-            <!-- Cliente Socio -->
-            <div class="card mb-4 shadow-sm">
-                <div class="card-body">
-                    <h3 class="card-title">👑 Cliente Socio</h3>
-                    <p class="card-text">Suma puntos y beneficios especiales</p>
-                    {% if request.session.customer_id %}
-                        <a href="{% url 'products:product_list' %}" class="btn btn-warning btn-lg">
-                            Continuar Como Socio
-                        </a>
-                        <div class="mt-2">
-                            <small class="text-muted">Se mostrará un modal con los datos del socio</small>
+            <div class="alert active-session-alert " role="status" aria-label="Sesión de socio activa">
+                <div class="d-flex align-items-center ">
+                    <div class="flex-grow-1 ">
+                        <h4 class="alert-heading mb-2 " >¡Sesión de Socio Activa! 👑</h4>
+                        
+                        <div class="d-flex align-items-center justify-content-center">
+                            <strong class="me-2">{{ request.session.customer_name }}</strong>
+                            <span class="text-muted">| DNI: {{ request.session.customer_dni }}</span>
                         </div>
-                    {% else %}
-                        <a href="{% url 'cart:customer_login' %}" class="btn btn-warning btn-lg">
-                            Ingresar Como Socio
-                        </a>
-                        <div class="mt-2">
-                            <small class="text-muted">Solo se solicitará su DNI</small>
-                        </div>
-                    {% endif %}
+                    </div>
+                    <a href="{% url 'cart:customer_logout' %}" class="btn btn-outline-secondary btn-sm ms-3" aria-label="Cerrar sesión de socio">
+                        Cerrar Sesión
+                    </a>
                 </div>
             </div>
+            {% endif %}
 
-            <!-- Cliente Regular -->
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h3 class="card-title">👤 Cliente Regular</h3>
-                    <p class="card-text">Realiza tu pedido con nuestros precios regulares</p>
-                    <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
-                        Hacer Pedido Regular
-                    </a>
-                    <div class="mt-2">
-                        <small class="text-muted">No requiere identificación</small>
+            <div class="cards-container">
+                <div class="row row-equal-height justify-content-center g-4">
+                    <!-- Cliente Socio -->
+                    <div class="col-xl-5 col-lg-6 col-md-10">
+                        <article class="customer-card" aria-label="Opción de cliente socio">
+                            <div class="customer-card-header">
+                                <span class="customer-icon">👑</span>
+                                <h2 class="customer-title mb-0">Cliente Socio</h2>
+                            </div>
+                            <div class="customer-card-body">
+                                
+                                
+                                <div class="customer-benefits" role="list" aria-label="Beneficios para socios">
+                                    <div class="benefit-item" role="listitem">
+                                        <span class="benefit-icon">✓</span>
+                                        <span>Acumulación de puntos</span>
+                                    </div>
+                                    <div class="benefit-item" role="listitem">
+                                        <span class="benefit-icon">✓</span>
+                                        <span>Descuentos exclusivos</span>
+                                    </div>
+                                    <div class="benefit-item" role="listitem">
+                                        <span class="benefit-icon">✓</span>
+                                        <span>Ofertas especiales</span>
+                                    </div>
+                                </div>
+
+                                {% if request.session.customer_id %}
+                                    <a href="{% url 'products:product_list' %}" class="btn btn-warning btn-lg" aria-label="Continuar como socio identificado">
+                                        Continuar Como Socio
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'cart:customer_login' %}" class="btn btn-warning btn-lg" aria-label="Ingresar como socio">
+                                        Ingresar Como Socio
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Cliente Regular -->
+                    <div class="col-xl-5 col-lg-6 col-md-10">
+                        <article class="customer-card" aria-label="Opción de cliente regular">
+                            <div class="customer-card-header">
+                                <span class="customer-icon">👤</span>
+                                <h2 class="customer-title mb-0">Cliente Regular</h2>
+                            </div>
+                            <div class="customer-card-body">
+                                
+                                
+                                <div class="customer-benefits" role="list" aria-label="Características para clientes regulares">
+                                    <div class="benefit-item" role="listitem">
+                                        <span class="benefit-icon">⚡</span>
+                                        <span>Proceso rápido y simple</span>
+                                    </div>
+                                    <div class="benefit-item" role="listitem">
+                                        <span class="benefit-icon">💰</span>
+                                        <span>Precios regulares</span>
+                                    </div>
+                                    <div class="benefit-item" role="listitem">
+                                        <span class="benefit-icon">📱</span>
+                                        <span>Sin registro requerido</span>
+                                    </div>
+                                </div>
+
+                                <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg" aria-label="Hacer pedido como cliente regular">
+                                    Hacer Pedido Regular
+                                </a>
+                            </div>
+                        </article>
                     </div>
                 </div>
             </div>
+
+            <!-- Información adicional -->
+            
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Efectos de hover mejorados
+    const cards = document.querySelectorAll('.customer-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.zIndex = '10';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.zIndex = '1';
+        });
+    });
+    
+    // Asegurar que las tarjetas tengan la misma altura
+    function setEqualHeight() {
+        const cards = document.querySelectorAll('.customer-card');
+        let maxHeight = 0;
+        
+        // Reset heights
+        cards.forEach(card => {
+            card.style.height = 'auto';
+        });
+        
+        // Find max height
+        cards.forEach(card => {
+            if (card.offsetHeight > maxHeight) {
+                maxHeight = card.offsetHeight;
+            }
+        });
+        
+        // Set all cards to max height
+        cards.forEach(card => {
+            card.style.height = maxHeight + 'px';
+        });
+    }
+    
+    // Ejecutar al cargar y al redimensionar
+    setEqualHeight();
+    window.addEventListener('resize', setEqualHeight);
+});
+</script>
 {% endblock %}
