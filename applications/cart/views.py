@@ -164,6 +164,17 @@ def order_success(request, order_id):
 
 def home(request):
     """Página de inicio - Selección de tipo de cliente"""
+    # SIEMPRE VACIAR CARRITO AL INGRESAR AL HOME
+    cart = Cart(request)
+    cart.clear()
+    
+    # También limpiar sesión de socio si existe
+    if 'customer_id' in request.session:
+        del request.session['customer_id']
+        del request.session['customer_name']
+        del request.session['customer_points']
+        del request.session['customer_dni']
+    
     return render(request, "cart/home.html")
 
 def customer_login(request):

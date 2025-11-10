@@ -367,9 +367,12 @@
                     <div class="alert alert-danger" role="alert" aria-live="assertive">{{ error }}</div>
                     {% endif %}
                     
-                    <button type="submit" class="btn btn-success w-100 btn-lg mt-3" aria-label="Confirmar pedido">
-                        ✅ Confirmar Pedido
-                    </button>
+                    <button type="submit" 
+                        class="btn {% if not cart %}btn-secondary{% else %}btn-success{% endif %} w-100 btn-lg mt-3"
+                        {% if not cart %}disabled title="Agrega productos al carrito primero"{% endif %}
+                        aria-label="Confirmar pedido">
+                    {% if cart %}✅ Confirmar Pedido{% else %}🛒 Carrito Vacío{% endif %}
+                </button>
                 </form>
             </section>
         </div>
@@ -377,6 +380,9 @@
 </div>
 
 <script>
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Mejorar la accesibilidad de los formularios de cantidad
     const quantityInputs = document.querySelectorAll('input[type="number"][name="quantity"]');
@@ -400,4 +406,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+
 {% endblock %}
