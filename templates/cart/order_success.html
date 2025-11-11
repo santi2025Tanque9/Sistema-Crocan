@@ -44,8 +44,6 @@
                         <h6>¡Gracias por tu compra, {{ last_customer_data.name }}!</h6>
                         <p class="mb-1">Has ganado <strong>{{ last_customer_data.points_earned }} puntos</strong> por esta compra.</p>
                         <p class="mb-0">Puntos totales acumulados: <strong>{{ last_customer_data.points }}</strong></p>
-                        <hr>
-                        <p class="mb-0 small text-muted">Tu sesión como socio se ha cerrado automáticamente.</p>
                     </div>
                     {% elif points_earned > 0 %}
                     <div class="alert alert-info mt-4">

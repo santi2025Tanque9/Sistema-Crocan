@@ -47,6 +47,13 @@ def cart_detail(request):
     cart = Cart(request)
     
     if request.method == "POST":
+        # VERIFICAR SI EL CARRITO ESTÁ VACÍO
+        if not cart:
+            return render(request, "cart/cart_detail.html", {
+                "cart": cart,
+                "error": "❌ No puedes confirmar un pedido con el carrito vacío. Agrega productos antes de continuar."
+            })
+        
         customer_name = request.POST.get('customer_name')
         
         # Determinar si es socio o regular
@@ -57,7 +64,8 @@ def cart_detail(request):
             # Cliente socio - usar el de la sesión
             try:
                 customer = Usuario.objects.get(id=request.session['customer_id'])
-                customer_name = None
+                # IMPORTANTE: Asignar el nombre del socio a customer_name
+                customer_name = customer.get_full_name()  # ← ESTA ES LA SOLUCIÓN
             except Usuario.DoesNotExist:
                 # Si el usuario fue eliminado, limpiar sesión
                 if 'customer_id' in request.session:
@@ -77,11 +85,19 @@ def cart_detail(request):
                 })
         
         if cart:
+            # Calcular puntos ganados
+            points_earned = 0
+            if customer:
+                points_earned = int(cart.get_total() / 100)
+                customer.puntos += points_earned
+                customer.save()
+            
             # Crear el pedido
             order = Order.objects.create(
-                customer_name=customer_name,
+                customer_name=customer_name,  # ← Ahora siempre tendrá un valor
                 customer=customer,
-                total=cart.get_total()
+                total=cart.get_total(),
+                points_earned=points_earned
             )
             
             # Crear los items del pedido
@@ -93,13 +109,6 @@ def cart_detail(request):
                     price=item['price'],
                     note=item.get('note', '')
                 )
-            
-            # Si es socio, acumular puntos (1 punto por cada $100 gastado)
-            points_earned = 0
-            if customer:
-                points_earned = int(cart.get_total() / 100)
-                customer.puntos += points_earned
-                customer.save()
             
             # Guardar información para mostrar en order_success
             request.session['points_earned'] = points_earned
