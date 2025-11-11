@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-red: #c60c30;
+        --primary-red-dark: #a50927;
+        --secondary-yellow: #ffc107;
+        --secondary-yellow-dark: #e0a800;
+        --dark-black: #222;
+        --light-bg: #f8f9fa;
+        --border-radius: 12px;
+        --transition-speed: 0.3s;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+        --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        font-family: var(--font-family);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .login-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+
+    .login-card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        background: white;
+        transition: all var(--transition-speed);
+        width: 100%;
+        max-width: 450px;
+    }
+
+    .login-card:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-2px);
+    }
+
+    .login-header {
+        background: linear-gradient(135deg, var(--dark-black) 0%, #444 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        border-bottom: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg);
+        animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .login-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+        position: relative;
+        z-index: 2;
+    }
+
+    .login-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .login-subtitle {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+    }
+
+    .login-body {
+        padding: 2.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--dark-black);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all var(--transition-speed);
+        background-color: #f8f9fa;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-red);
+        box-shadow: 0 0 0 0.2rem rgba(198, 12, 48, 0.1);
+        background-color: white;
+    }
+
+    .form-text {
+        color: #666;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Buttons */
+    .btn-warning {
+        background: linear-gradient(135deg, var(--secondary-yellow) 0%, var(--secondary-yellow-dark) 100%);
+        border: none;
+        color: var(--dark-black);
+        font-weight: 700;
+        padding: 14px 30px;
+        border-radius: 8px;
+        transition: all var(--transition-speed);
+        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+        width: 100%;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+    }
+
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+        background: linear-gradient(135deg, var(--secondary-yellow-dark) 0%, #d39e00 100%);
+        color: var(--dark-black);
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid var(--dark-black);
+        color: var(--dark-black);
+        font-weight: 600;
+        padding: 10px 25px;
+        border-radius: 8px;
+        transition: all var(--transition-speed);
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: var(--dark-black);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Alert */
+    .alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        border: none;
+        border-radius: 8px;
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* DNI Input Styling */
+    .dni-input-group {
+        position: relative;
+    }
+
+    .dni-prefix {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        font-weight: 600;
+        z-index: 3;
+    }
+
+    .dni-input {
+        padding-left: 45px !important;
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .login-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Responsive */
+    @media (max-width: 576px) {
+        .login-body {
+            padding: 2rem 1.5rem;
+        }
+        
+        .login-header {
+            padding: 1.5rem;
+        }
+        
+        .login-title {
+            font-size: 1.3rem;
+        }
+    }
+
+    /* Focus states for accessibility */
+    .btn:focus,
+    .form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(198, 12, 48, 0.1);
+    }
+
+    /* Loading state */
+    .btn-loading {
+        position: relative;
+        color: transparent;
+    }
+
+    .btn-loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        border: 2px solid transparent;
+        border-top: 2px solid var(--dark-black);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="container">
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+                <span class="login-icon">👑</span>
+                <h1 class="login-title">Acceso Cliente Socio</h1>
+                
+            </div>
+
+            <!-- Body -->
+            <div class="login-body">
+                {% if error %}
+                <div class="alert alert-danger" role="alert" aria-live="assertive">
+                    <strong>Error:</strong> {{ error }}
+                </div>
+                {% endif %}
+                
+                <form method="post" id="loginForm" aria-label="Formulario de acceso para cliente socio">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="dni" class="form-label">Número de Documento (DNI)</label>
+                        <div class="dni-input-group">
+                            <span class="dni-prefix">DNI </span>
+                            <input type="text" 
+                                   class="form-control dni-input" 
+                                   id="dni" 
+                                   name="dni" 
+                                   placeholder="Ej: 12345678" 
+                                   required
+                                   pattern="[0-9]{7,8}" 
+                                   title="Ingrese un DNI válido (7 u 8 dígitos)"
+                                   aria-required="true"
+                                   aria-describedby="dniHelp">
+                        </div>
+                        <div id="dniHelp" class="form-text">
+                            Solo se requiere el DNI para identificar tu cuenta de socio.
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning" id="submitBtn" aria-label="Ingresar como socio">
+                        Ingresar Como Socio
+                    </button>
+                </form>
+                
+                <div class="mt-4 pt-3 border-top">
+                    <a href="{% url 'cart:home' %}" class="btn btn-outline-secondary" aria-label="Volver al inicio">
+                        ← Volver al Inicio
+                    </a>
+                </div>
+
+                <!-- Información adicional -->
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const dniInput = document.getElementById('dni');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Formatear DNI automáticamente
+    dniInput.addEventListener('input', function(e) {
+        // Remover cualquier caracter que no sea número
+        let value = e.target.value.replace(/\D/g, '');
+        
+        // Limitar a 8 dígitos
+        if (value.length > 8) {
+            value = value.slice(0, 8);
+        }
+        
+        e.target.value = value;
+    });
+
+    // Validación en tiempo real
+    dniInput.addEventListener('blur', function() {
+        const value = this.value.trim();
+        const isValid = /^\d{7,8}$/.test(value);
+        
+        if (value && !isValid) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Efecto de loading al enviar el formulario
+    loginForm.addEventListener('submit', function() {
+        submitBtn.classList.add('btn-loading');
+        submitBtn.disabled = true;
+    });
+
+    // Mejorar accesibilidad del input
+    dniInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            loginForm.requestSubmit();
+        }
+    });
+
+    // Auto-focus en el input al cargar la página
+    setTimeout(() => {
+        dniInput.focus();
+    }, 100);
+});
+</script>
+{% endblock %}
